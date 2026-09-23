@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import api from "../lib/api";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -164,7 +164,6 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-slate-50/50 p-6 md:p-10 font-sans">
       <div className="mx-auto max-w-7xl">
-        {/* Header Section */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <div>
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Product Admin Dashboard</h1>
@@ -186,7 +185,6 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Filter Toolbar */}
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
           <div className="relative">
             <input
@@ -236,7 +234,6 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Content States */}
         {loading ? (
           <div className="py-24 text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent align-[-0.125em]"></div>
@@ -255,7 +252,6 @@ export default function ProductsPage() {
           </div>
         ) : (
           <>
-            {/* Desktop Table */}
             <div className="hidden md:block overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-100">
               <table className="w-full border-collapse text-left text-sm text-slate-600">
                 <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-100">
@@ -297,7 +293,6 @@ export default function ProductsPage() {
               </table>
             </div>
 
-            {/* Mobile Cards */}
             <div className="grid grid-cols-1 gap-4 md:hidden">
               {products.map((p) => (
                 <div 
@@ -317,7 +312,6 @@ export default function ProductsPage() {
               ))}
             </div>
 
-            {/* Pagination Toolbar */}
             <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <p className="text-sm font-medium text-slate-500">
                 Showing <span className="font-bold text-slate-800">{total === 0 ? 0 : (pageParam - 1) * limitParam + 1}</span> to <span className="font-bold text-slate-800">{Math.min(pageParam * limitParam, total)}</span> of <span className="font-bold text-slate-800">{total}</span> results
@@ -346,7 +340,6 @@ export default function ProductsPage() {
           </>
         )}
 
-        {/* Add Product Modal */}
         {isAddModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
             <div className="w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-100">
@@ -445,5 +438,13 @@ export default function ProductsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-slate-500">Loading catalog...</div>}>
+      <ProductsContent />
+    </Suspense>
   );
 }
